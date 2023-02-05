@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
-app.use(cors()); // é uma forma de compartilhar recursos entre diferentes origens. Disponibiliza os headers do HTTP para verificar se tal recurso pode ou não ser acessado.
+app.use(cors()); // é uma forma de compartilhar recursos entre diferentes origens. Disponibiliza nos headers do HTTP para verificar se tal recurso pode ou não ser acessado.
 app.use(express.json());
 
 const users = []; // meu "banco de dados"
