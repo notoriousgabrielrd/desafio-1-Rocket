@@ -24,7 +24,7 @@ class Database {
     }
 
     #persist() {
-        console.log(this.#database)
+        // console.log(this.#database)
         fs.writeFile(databasePath, JSON.stringify(this.#database))
     }
 
@@ -63,6 +63,18 @@ class Database {
 
         if (rowIndex > -1) {
             this.#database[table].splice(rowIndex, 1)  // [[],[],[],[X]]
+            this.#persist()
+        }
+    }
+
+    deleteTodo(table, userId, todoId) {
+        const rowIndex = this.#database[table].findIndex(row => row.id === userId) // acha o index do user
+
+        if (rowIndex > -1) {
+            const rowTodoIndex = this.#database[table][rowIndex]['todos'].findIndex(row => row.id === todoId)
+            if (rowTodoIndex > -1) {
+                this.#database[table][rowIndex]['todos'].splice(rowTodoIndex, 1)
+            }
             this.#persist()
         }
     }

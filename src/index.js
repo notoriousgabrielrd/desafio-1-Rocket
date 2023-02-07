@@ -6,7 +6,7 @@ import cors from 'cors'
 // const database = require('./database.js')
 import Database from './database.js';
 import { v4 as uuidv4 } from 'uuid'
-
+import { checksExistsUserAccount, checksCreateTodosUserAvailability } from './middlewares/middlewares.js';
 // const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -14,24 +14,28 @@ const app = express();
 app.use(cors()); // é uma forma de compartilhar recursos entre diferentes origens. Disponibiliza nos headers do HTTP para verificar se tal recurso pode ou não ser acessado.
 app.use(express.json());
 
-const users = []; // meu "banco de dados"
+// const users = []; // meu "banco de dados"
 const database = new Database
 
-function checksExistsUserAccount(request, response, next) {
-  const { username } = request.headers
+// function checksExistsUserAccount(request, response, next) {
+//   const { username } = request.headers
 
 
-  const user = database.select('users', { username })
+//   const user = database.select('users', { username })
 
-  if (user.length <= 0) return response.status(404).json({ type: "Error", message: "User not found." })
+//   if (user.length <= 0) return response.status(404).json({ type: "Error", message: "User not found." })
 
-  return next()
-}
+//   return next()
+// }
 
 
 app.post('/users', (request, response) => {
 
-  const { name, username } = request.body
+
+  if (!request.body.plan) {
+    request.body.plan = "Free"
+  }
+  const { name, username, plan } = request.body
 
   const userAlreadyExists = database.select('users', { username })
 
@@ -49,12 +53,13 @@ app.post('/users', (request, response) => {
     id: uuidv4(),
     name,
     username,
+    plan,
     todos: []
   }
 
   database.insert('users', data)
 
-  return response.status(201).send(users)
+  return response.status(201).send(data)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
@@ -67,7 +72,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
   return response.json({ message: user[0] })
 });
 
-app.post('/todos', checksExistsUserAccount, (request, response) => {
+app.post('/todos', checksExistsUserAccount, checksCreateTodosUserAvailability, (request, response) => {
 
   //  OBS para data: salvar deadline como ANO-MES-DIA -> new Date('ANO-MES-DIA')
 
@@ -140,9 +145,8 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   return response.status(200).json(user)
 });
 
-app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+app.delete('/user/:id', checksExistsUserAccount, (request, response) => {
 
-  let tarefa;
 
   const { id } = request.params // id da tarefa
   const { username } = request.headers
@@ -152,6 +156,22 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   database.delete('users', user[0].id)
 
+
+  return response.status(200).json(user)
+
+});
+
+app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+
+  const { todoId } = request.query
+  let tarefa;
+
+  const { id } = request.params // id da tarefa
+  const { username } = request.headers
+
+  let user = database.select('users', { username }) // encontra o usuário
+
+  database.deleteTodo('users', id, todoId)
 
   return response.status(200).json(user)
 
