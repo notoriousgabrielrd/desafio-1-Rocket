@@ -38,7 +38,7 @@ export function checkTodoExists(request, response, next) {
 
     const isUserTodo = database.select('users', { username })[0]['todos'].some(row => row.id === todoId)
 
-    if (!result && !isUserTodo) {
+    if (!result || !isUserTodo) {
         return response.status(400).json({ type: "Error", message: "Invalid UUID." })
     }
 
