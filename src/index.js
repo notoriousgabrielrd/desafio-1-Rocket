@@ -6,7 +6,7 @@ import cors from 'cors'
 // const database = require('./database.js')
 import Database from './database.js';
 import { v4 as uuidv4 } from 'uuid'
-import { checksExistsUserAccount, checksCreateTodosUserAvailability } from './middlewares/middlewares.js';
+import { checksExistsUserAccount, checksCreateTodosUserAvailability, checkTodoExists } from './middlewares/middlewares.js';
 // const { v4: uuidv4 } = require('uuid');
 
 const app = express();
@@ -152,7 +152,7 @@ app.delete('/user/:id', checksExistsUserAccount, (request, response) => {
 
 });
 
-app.delete('/todos/:userId', checksExistsUserAccount, (request, response) => {
+app.delete('/todos/:userId', checksExistsUserAccount, checkTodoExists, (request, response) => {
 
   const { todoId } = request.query
   let tarefa;
@@ -160,11 +160,11 @@ app.delete('/todos/:userId', checksExistsUserAccount, (request, response) => {
   const { userId } = request.params // id da tarefa
   const { username } = request.headers
 
-  let user = database.select('users', { username }) // encontra o usuário
+  // let user = database.select('users', { username }) // encontra o usuário
 
-  database.deleteTodo('users', userId, todoId)
+  // database.deleteTodo('users', userId, todoId)
 
-  return response.status(200).json(user)
+  // return response.status(200).json(user)
 
 });
 

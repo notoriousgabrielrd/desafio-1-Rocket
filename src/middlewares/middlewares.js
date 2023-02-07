@@ -6,7 +6,7 @@ export function checksExistsUserAccount(request, response, next) {
     const { username } = request.headers
 
     const user = database.select('users', { username })
-    console.log('user>>> ', user)
+    // console.log('user>>> ', user)
     if (user.length <= 0) return response.status(404).json({ type: "Error", message: "User not found." })
 
     return next()
@@ -27,13 +27,21 @@ export function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 export function checkTodoExists(request, response, next) {
-
+    const regexExp = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
     const { username } = request.headers
     const { todoId } = request.query
-    /*
-    TODO:
-    [] - validate UUID with regex from node-no-libs
-    [] - middleware findByUser
-    */
 
+    const result = regexExp.test(todoId);
+
+    // const user = database.select('users', { username })
+    // const isUserTodo = user[0]['todos'].some(row => row.id === todoId)
+
+    const isUserTodo = database.select('users', { username })[0]['todos'].some(row => row.id === todoId)
+
+    if (!result && !isUserTodo) {
+        return response.status(400).json({ type: "Error", message: "Invalid UUID." })
+    }
+
+    next()
 }
+
