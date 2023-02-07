@@ -1,7 +1,13 @@
-const express = require('express');
-const cors = require('cors');
+// const express = require('express');
+import express from 'express'
+import cors from 'cors'
+// const cors = require('cors');
 
-const { v4: uuidv4 } = require('uuid');
+// const database = require('./database.js')
+import Database from './database.js';
+import { v4 as uuidv4 } from 'uuid'
+
+// const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
@@ -30,12 +36,21 @@ app.post('/users', (request, response) => {
 
   if (userAlreadyExists) return response.status(400).json({ type: "Error", message: "This username is already registered." })
 
-  users.push({
+  // users.push({
+  //   id: uuidv4(),
+  //   name,
+  //   username,
+  //   todos: []
+  // })
+
+  const data = {
     id: uuidv4(),
     name,
     username,
     todos: []
-  })
+  }
+
+  database.insert('users', data)
 
   return response.status(201).send(users)
 });
@@ -144,4 +159,4 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
 
 });
 
-module.exports = app;
+export default app

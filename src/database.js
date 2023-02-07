@@ -1,10 +1,16 @@
 // persistindo os dados na aplicação
 
+// const fs = require('node:fs/promises')
+// const path = require('path')
 import fs from 'node:fs/promises'
-// garante que o caminho é o da raiz.
-const databasePath = new URL('../db.json', import.meta.url)
 
-export class Database {
+const meta = import.meta.url
+
+// garante que o caminho é o da raiz.
+// const databasePath = new URL('../db.json', meta)
+const databasePath = new URL('../db.json', meta)
+
+class Database {
 
     #database = {}
 
@@ -69,3 +75,6 @@ export class Database {
         }
     }
 }
+
+// module.exports = Database
+export default Database
