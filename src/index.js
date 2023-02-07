@@ -39,15 +39,7 @@ app.post('/users', (request, response) => {
 
   const userAlreadyExists = database.select('users', { username })
 
-  // console.log(userAlreadyExists)
   if (userAlreadyExists.length > 0) return response.status(400).json({ type: "Error", message: "This username is already registered." })
-
-  // users.push({
-  //   id: uuidv4(),
-  //   name,
-  //   username,
-  //   todos: []
-  // })
 
   const data = {
     id: uuidv4(),
@@ -66,7 +58,6 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 
   const { username } = request.headers
 
-  // const user = users.filter((element) => element.username === username)
   const user = database.select('users', { username })
 
   return response.json({ message: user[0] })
@@ -78,8 +69,8 @@ app.post('/todos', checksExistsUserAccount, checksCreateTodosUserAvailability, (
 
   const { username } = request.headers
   const { title, deadline } = request.body
-  // const user = users.filter((elem) => elem.username === username)
   const user = database.select('users', { username })
+
   const newList = {
     id: uuidv4(),
     title,
@@ -161,17 +152,17 @@ app.delete('/user/:id', checksExistsUserAccount, (request, response) => {
 
 });
 
-app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
+app.delete('/todos/:userId', checksExistsUserAccount, (request, response) => {
 
   const { todoId } = request.query
   let tarefa;
 
-  const { id } = request.params // id da tarefa
+  const { userId } = request.params // id da tarefa
   const { username } = request.headers
 
   let user = database.select('users', { username }) // encontra o usuário
 
-  database.deleteTodo('users', id, todoId)
+  database.deleteTodo('users', userId, todoId)
 
   return response.status(200).json(user)
 

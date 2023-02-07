@@ -25,3 +25,15 @@ export function checksCreateTodosUserAvailability(request, response, next) {
     next()
 
 }
+
+export function checkTodoExists(request, response, next) {
+
+    const { username } = request.headers
+    const { todoId } = request.query
+    /*
+    TODO:
+    [] - validate UUID with regex from node-no-libs
+    [] - middleware findByUser
+    */
+
+}
