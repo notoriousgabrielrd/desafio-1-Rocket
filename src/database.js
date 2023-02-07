@@ -4,25 +4,27 @@
 // const path = require('path')
 import fs from 'node:fs/promises'
 
-const meta = import.meta.url
+// const meta = import.meta.url
 
 // garante que o caminho é o da raiz.
 // const databasePath = new URL('../db.json', meta)
-const databasePath = new URL('../db.json', meta)
+const databasePath = new URL('../db.json', import.meta.url)
 
 class Database {
 
     #database = {}
 
     constructor() {
-        fs.readfile(databasePath, 'utf-8').then(data => {
+        fs.readFile(databasePath, 'utf-8').then(data => {
             this.#database = JSON.parse(data)
+            // this.#persist()
         }).catch(() => {
             this.#persist()
         })
     }
 
     #persist() {
+        console.log(this.#database)
         fs.writeFile(databasePath, JSON.stringify(this.#database))
     }
 
@@ -32,15 +34,15 @@ class Database {
 
         if (search.username) {
             data = data.filter(row => {
-                console.log('object entrie>> ', Object.entries(search))
+                // console.log('object entrie>> ', Object.entries(search))
                 return Object.entries(search).some(([key, value]) => {
-                    console.log('key> ', key)
-                    console.log('value> ', value)
+                    // console.log('key> ', key)
+                    // console.log('value> ', value)
                     return row[key].includes(value)
                 })
             })
         }
-
+        // console.log('data>> ', data)
         return data
     }
 
@@ -49,9 +51,8 @@ class Database {
         if (Array.isArray(this.#database[table])) {
             this.#database[table].push(data)
         } else {
-            return this.#database[table] = [data]
+            this.#database[table] = [data]
         }
-
         this.#persist()
 
         return data
