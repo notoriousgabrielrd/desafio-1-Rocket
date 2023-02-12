@@ -15,7 +15,7 @@ class Database {
     #database = {}
 
     constructor() {
-        fs.readFile(databasePath, 'utf-8').then(data => {
+        fs.readFile(databasePath, 'utf-8').then(data => { // lê td oq existe em db.json e insere no #database
             this.#database = JSON.parse(data)
             // this.#persist()
         }).catch(() => {
@@ -25,17 +25,17 @@ class Database {
 
     #persist() {
         // console.log(this.#database)
-        fs.writeFile(databasePath, JSON.stringify(this.#database))
+        fs.writeFile(databasePath, JSON.stringify(this.#database)) // persiste todos os dados de #database para dentro do db.json
     }
 
 
     select(table, search) {
-        let data = this.#database[table] ?? []
+        let data = this.#database[table] ?? [] // cria uma key com o valor passado, se não retorna []
 
-        if (search.username) {
+        if (search.username) { // {name: "Gabriel"}
             data = data.filter(row => {
                 // console.log('object entrie>> ', Object.entries(search))
-                return Object.entries(search).some(([key, value]) => {
+                return Object.entries(search).some(([key, value]) => {// [["name", "Gabriel"]]
                     // console.log('key> ', key)
                     // console.log('value> ', value)
                     return row[key].includes(value)
@@ -48,10 +48,10 @@ class Database {
 
     insert(table, data) {
 
-        if (Array.isArray(this.#database[table])) {
-            this.#database[table].push(data)
+        if (Array.isArray(this.#database[table])) { // verifica se this.#database[table] é um Array
+            this.#database[table].push(data)        // se for puxa os dados de data para a key correspondente
         } else {
-            this.#database[table] = [data]
+            this.#database[table] = [data]          // se não cria uma key com esse array dentro
         }
         this.#persist()
 
@@ -59,9 +59,9 @@ class Database {
     }
 
     delete(table, id) {
-        const rowIndex = this.#database[table].findIndex(row => row.id === id)
+        const rowIndex = this.#database[table].findIndex(row => row.id === id) // Encontra o index
 
-        if (rowIndex > -1) {
+        if (rowIndex > -1) {    // verifica se existe
             this.#database[table].splice(rowIndex, 1)  // [[],[],[],[X]]
             this.#persist()
         }
@@ -82,7 +82,7 @@ class Database {
     update(table, id, data) {
         const rowIndexToUpdate = this.#database[table].findIndex(row => row.id === id)
 
-        if (rowIndexToUpdate > -1) {
+        if (rowIndexToUpdate > -1) {  //        Insere Id,    descontrói restante dos dados
             this.#database[table][rowIndexToUpdate] = { id, ...data }// [[],[],[],[]]
             this.#persist()
         }
